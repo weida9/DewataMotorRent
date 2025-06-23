@@ -40,7 +40,34 @@ Sistem manajemen rental motor modern dan responsif yang dibangun dengan Flask da
 - MySQL Server
 - XAMPP/phpMyAdmin (opsional untuk manajemen database)
 
-## 🚀 Instalasi
+## 🚀 Quick Deployment
+
+### 🎯 Ubuntu Server (One-Click Install)
+
+**Deployment super mudah tanpa perlu domain:**
+
+```bash
+# Option 1: Download dan jalankan
+wget https://raw.githubusercontent.com/weida9/DewataMotorRent/main/install.sh
+sudo bash install.sh
+
+# Option 2: Direct run (Recommended)
+curl -sSL https://raw.githubusercontent.com/weida9/DewataMotorRent/main/install.sh | sudo bash
+```
+
+**✅ Yang akan terinstall otomatis:**
+- Apache2 + mod_wsgi
+- MySQL 8.0+ + phpMyAdmin
+- Python 3.8+ + dependencies
+- UFW Firewall + security headers
+- Complete aplikasi dengan sample data
+
+**🌐 Setelah instalasi selesai:**
+- **Akses aplikasi**: `http://IP_SERVER_ANDA`
+- **phpMyAdmin**: `http://IP_SERVER_ANDA/phpmyadmin`
+- **Login**: `superadmin` / `admin123`
+
+### 🖥️ Local Development
 
 ### 1. Clone/Download Project
 ```bash
