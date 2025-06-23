@@ -22,7 +22,7 @@ GITHUB_REPO = "git@github.com:weida9/DewataMotorRent.git"
 APP_NAME = "dewata-motor"
 APP_USER = "dewata"
 APP_DIR = f"/opt/{APP_NAME}"
-DOMAIN = "your-domain.com"  # Change this to your domain
+DOMAIN = "localhost"  # Using localhost/IP access (no domain required)
 DB_NAME = "motordewata"
 DB_USER = "dewata_user"
 
@@ -336,8 +336,6 @@ def create_apache_vhost():
     print_header("CREATING APACHE VIRTUAL HOST")
     
     vhost_content = f"""<VirtualHost *:80>
-    ServerName {DOMAIN}
-    ServerAlias www.{DOMAIN}
     DocumentRoot {APP_DIR}
     WSGIDaemonProcess {APP_NAME} python-home={APP_DIR}/venv python-path={APP_DIR}
     WSGIProcessGroup {APP_NAME}
@@ -399,7 +397,9 @@ def setup_ssl_certbot():
     run_command("snap install --classic certbot", "Installing Certbot")
     run_command("ln -sf /snap/bin/certbot /usr/bin/certbot", "Creating Certbot symlink")
     
-    print_warning(f"To setup SSL, run: certbot --apache -d {DOMAIN} -d www.{DOMAIN}")
+    print_info("SSL setup skipped - no domain configured")
+    print_info("Application will be accessible via HTTP on server IP")
+    print_warning("For production with domain, run: certbot --apache -d yourdomain.com")
     print_success("Certbot installed successfully")
 
 def create_systemd_service():
@@ -518,8 +518,8 @@ def print_summary(mysql_root_password, db_password, phpmyadmin_password):
 {Colors.OKGREEN}🎉 Dewata Motor has been successfully deployed!{Colors.ENDC}
 
 {Colors.OKBLUE}📋 DEPLOYMENT SUMMARY:{Colors.ENDC}
-{Colors.BOLD}Application URL:{Colors.ENDC} http://{DOMAIN}
-{Colors.BOLD}phpMyAdmin URL:{Colors.ENDC} http://{DOMAIN}/phpmyadmin
+{Colors.BOLD}Application URL:{Colors.ENDC} http://YOUR_SERVER_IP
+{Colors.BOLD}phpMyAdmin URL:{Colors.ENDC} http://YOUR_SERVER_IP/phpmyadmin
 {Colors.BOLD}Application Directory:{Colors.ENDC} {APP_DIR}
 {Colors.BOLD}Application User:{Colors.ENDC} {APP_USER}
 
@@ -535,9 +535,9 @@ def print_summary(mysql_root_password, db_password, phpmyadmin_password):
 {Colors.BOLD}Admin:{Colors.ENDC} admin / admin123
 
 {Colors.WARNING}⚠️  IMPORTANT NEXT STEPS:{Colors.ENDC}
-1. Change default login passwords immediately
-2. Update domain name in Apache configuration if needed
-3. Setup SSL certificate: certbot --apache -d {DOMAIN}
+1. Access application at http://YOUR_SERVER_IP (replace with actual server IP)
+2. Change default login passwords immediately
+3. For production with domain: setup SSL certificate with certbot --apache -d yourdomain.com
 4. Review and test all functionality
 5. Setup monitoring and log rotation
 

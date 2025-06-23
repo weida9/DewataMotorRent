@@ -16,7 +16,7 @@ deployment-scripts/
 
 ## 🎯 Quick Start
 
-### 1. One-Click Deployment
+### 1. One-Click Deployment (Tanpa Domain)
 
 Untuk deploy baru di server Ubuntu kosong:
 
@@ -24,6 +24,8 @@ Untuk deploy baru di server Ubuntu kosong:
 # Download dan jalankan script quick deployment
 curl -sSL https://raw.githubusercontent.com/weida9/DewataMotorRent/main/deployment-scripts/deploy-quick.sh | sudo bash
 ```
+
+**✅ Tidak perlu domain!** Aplikasi bisa diakses langsung via IP server.
 
 ### 2. Manual Deployment
 
@@ -185,8 +187,9 @@ Berisi panduan detail untuk:
 - **Access**: Root/sudo access
 
 ### Domain Requirements (Opsional)
-- Domain name yang sudah di-point ke server IP
-- DNS sudah propagated
+- **Tidak wajib:** Aplikasi bisa diakses langsung via IP server
+- **Jika ada domain:** Domain name yang sudah di-point ke server IP
+- **Untuk SSL:** DNS sudah propagated (untuk certbot)
 
 ## 🎯 Deployment Flow
 

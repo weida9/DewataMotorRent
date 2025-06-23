@@ -11,9 +11,10 @@ Panduan lengkap untuk deploy aplikasi Dewata Motor di server Ubuntu.
 - **Network**: Internet connection untuk download packages
 - **Access**: Root/sudo access
 
-### Domain Requirements
-- Domain name yang sudah di-point ke server IP
-- DNS sudah propagated (bisa dicek dengan `nslookup domain.com`)
+### Domain Requirements (Optional)
+- **Tidak wajib:** Aplikasi bisa diakses langsung via IP server
+- **Jika ada domain:** Domain name yang sudah di-point ke server IP
+- **Untuk SSL:** DNS sudah propagated (bisa dicek dengan `nslookup domain.com`)
 
 ## 🎯 Deployment Methods
 
@@ -21,19 +22,19 @@ Panduan lengkap untuk deploy aplikasi Dewata Motor di server Ubuntu.
 
 ```bash
 # Download and run quick deployment script
-curl -sSL https://raw.githubusercontent.com/weida9/DewataMotorRent/main/deploy-quick.sh | sudo bash
+curl -sSL https://raw.githubusercontent.com/weida9/DewataMotorRent/main/deployment-scripts/deploy-quick.sh | sudo bash
 ```
 
 ### Method 2: Manual Deployment
 
 1. **Download deployment script**
    ```bash
-   wget https://raw.githubusercontent.com/weida9/DewataMotorRent/main/deploy.py
+   wget https://raw.githubusercontent.com/weida9/DewataMotorRent/main/deployment-scripts/deploy.py
    ```
 
 2. **Run deployment**
    ```bash
-   sudo python3 deploy.py
+   sudo python3 deployment-scripts/deploy.py
    ```
 
 ### Method 3: Clone and Deploy
@@ -46,7 +47,7 @@ curl -sSL https://raw.githubusercontent.com/weida9/DewataMotorRent/main/deploy-q
 
 2. **Run deployment script**
    ```bash
-   sudo python3 deploy.py
+   sudo python3 deployment-scripts/deploy.py
    ```
 
 ## 🔧 What Gets Installed
@@ -112,19 +113,25 @@ curl -sSL https://raw.githubusercontent.com/weida9/DewataMotorRent/main/deploy-q
 ### System Access
 - **MySQL Root**: Auto-generated (saved in CREDENTIALS.json)
 - **Database User**: `dewata_user` (password in CREDENTIALS.json)
-- **phpMyAdmin**: Available at `http://your-domain.com/phpmyadmin`
+- **phpMyAdmin**: Available at `http://YOUR_SERVER_IP/phpmyadmin`
 - **App User**: `dewata` (system user for application)
 
 ## 🌐 Post-Deployment Steps
 
-### 1. Update Domain Configuration
+### 1. Access Application
 
-Edit Apache configuration:
+Application is now accessible at:
+- **Main Application**: `http://YOUR_SERVER_IP`
+- **phpMyAdmin**: `http://YOUR_SERVER_IP/phpmyadmin`
+
+Replace `YOUR_SERVER_IP` with your actual server IP address.
+
+**Optional**: If you have a domain, edit Apache configuration:
 ```bash
 sudo nano /etc/apache2/sites-available/dewata-motor.conf
 ```
 
-Change `ServerName` and `ServerAlias` to your actual domain:
+Add domain configuration:
 ```apache
 ServerName your-domain.com
 ServerAlias www.your-domain.com
@@ -149,7 +156,7 @@ sudo certbot renew --dry-run
 
 **Important**: Change default application passwords immediately!
 
-1. Login to application at `http://your-domain.com`
+1. Login to application at `http://YOUR_SERVER_IP`
 2. Go to Settings → Change Password
 3. Update both superadmin and admin passwords
 
