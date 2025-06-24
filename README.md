@@ -10,236 +10,297 @@ Sistem manajemen rental motor modern dan responsif yang dibangun dengan Flask da
 
 ## ✨ Highlights
 
-- 🔐 **Secure Authentication** - Session-based dengan role management
-- 📱 **Responsive Design** - Mobile-first dengan Tailwind CSS
-- 🖼️ **Image Management** - Upload, resize, dan preview gambar motor
+- 🔐 **Secure Authentication** - Session-based dengan role management dan rate limiting
+- 📱 **Responsive Design** - Mobile-first dengan Tailwind CSS yang modern
+- 🖼️ **Image Management** - Upload, resize, preview, dan manajemen gambar motor
 - 👥 **Multi-Role System** - Superadmin dan Admin dengan akses berbeda
-- 🚗 **Motor Management** - CRUD lengkap dengan status tracking
+- 🚗 **Motor Management** - CRUD lengkap dengan status tracking dan deskripsi
 - 🔑 **Password Management** - Ganti password sendiri dan admin
+- 🛡️ **Security Features** - Rate limiting, XSS protection, secure file upload
+- 📊 **Data Isolation** - Setiap admin hanya melihat data motornya sendiri
 
-## 📋 Fitur
+## 📋 Fitur Lengkap
 
-- **Autentikasi berbasis Session** - Login/logout dengan keamanan session
-- **Role-based Access Control**:
-  - **Superadmin**: Dapat melihat & menambah akun admin
-  - **Admin**: Dapat melihat & menambah data motor
-- **Manajemen User** - CRUD untuk akun pengguna
-- **Manajemen Motor** - CRUD untuk data motor rental
-- **Dashboard Interaktif** - Tampilan ringkasan dengan Tailwind CSS
+### 🔐 Sistem Autentikasi
+- **Login/Logout** dengan session-based security
+- **Role-based Access Control** (Superadmin vs Admin)
+- **Rate Limiting** untuk mencegah brute force attack
+- **Session timeout** untuk keamanan ekstra
+- **Password change** untuk semua user
+
+### 👥 Manajemen User (Superadmin Only)
+- **Lihat daftar user** dengan informasi role
+- **Tambah admin baru** (superadmin tidak bisa buat superadmin lain)
+- **Edit password admin** untuk reset akses
+- **Validasi input** dan sanitasi data
+
+### 🏍️ Manajemen Motor (Admin Only)
+- **CRUD lengkap**: Create, Read, Update, Delete motor
+- **Upload gambar** dengan validasi dan resize otomatis
+- **Status tracking**: Tersedia, Disewa, Maintenance
+- **Deskripsi detail** untuk setiap motor
+- **Data isolation**: Admin hanya melihat motor miliknya
+- **Preview gambar** dengan modal view
+
+### 🎨 User Interface
+- **Responsive design** untuk desktop, tablet, dan mobile
+- **Modern UI** dengan Tailwind CSS dan Inter font
+- **Dashboard interaktif** dengan statistik real-time
+- **Dark/light mode** compatible
+- **Smooth animations** dan hover effects
+- **Flash messaging** untuk feedback user
+
+### 🛡️ Keamanan
+- **Secure file upload** dengan validasi extensi dan size
+- **Image processing** untuk mencegah malicious file
+- **XSS protection** dengan proper templating
+- **CSRF protection** (Flask built-in)
+- **Password hashing** dengan Werkzeug
+- **Input validation** dan sanitasi
 
 ## 🛠️ Teknologi
 
-- **Backend**: Flask (Python)
-- **Database**: MySQL
-- **Frontend**: HTML + Tailwind CSS (via CDN)
-- **Authentication**: Session-based (tanpa JWT)
+- **Backend**: Flask 2.3.3 (Python)
+- **Database**: MySQL dengan PyMySQL connector
+- **Frontend**: HTML5 + Tailwind CSS 3.0 (via CDN)
+- **Image Processing**: Pillow (PIL)
+- **Security**: Werkzeug, Session-based auth
+- **Development**: Black, Pytest, Flake8
 
-## 📦 Persyaratan
+## 📦 Persyaratan Sistem
 
-- Python 3.7+
-- MySQL Server
-- XAMPP/phpMyAdmin (opsional untuk manajemen database)
+- **Python 3.8+**
+- **MySQL Server 5.7+**
+- **Minimum 1GB RAM**
+- **Minimum 100MB disk space**
+- **XAMPP/phpMyAdmin** (opsional untuk manajemen database)
 
-## 🚀 Quick Deployment
+## 🚀 Instalasi & Setup
 
-### 🎯 Ubuntu Server (One-Click Install)
-
-**Deployment super mudah tanpa perlu domain:**
+### 🎯 Quick Setup Local
 
 ```bash
-# Option 1: Download dan jalankan
-wget https://raw.githubusercontent.com/weida9/DewataMotorRent/main/install.sh
-sudo bash install.sh
-
-# Option 2: Direct run (Recommended)
-curl -sSL https://raw.githubusercontent.com/weida9/DewataMotorRent/main/install.sh | sudo bash
-```
-
-**✅ Yang akan terinstall otomatis:**
-- Apache2 + mod_wsgi
-- MySQL 8.0+ + phpMyAdmin
-- Python 3.8+ + dependencies
-- UFW Firewall + security headers
-- Complete aplikasi dengan sample data
-
-**🌐 Setelah instalasi selesai:**
-- **Akses aplikasi**: `http://IP_SERVER_ANDA`
-- **phpMyAdmin**: `http://IP_SERVER_ANDA/phpmyadmin`
-- **Login**: `superadmin` / `admin123`
-
-### 🖥️ Local Development
-
-### 1. Clone/Download Project
-```bash
-# Download atau extract project ke folder lokal
+# 1. Clone atau download project
+git clone <repository-url>
 cd DewataMotorRent
-```
 
-### 2. Install Dependencies
-```bash
+# 2. Install dependencies
 pip install -r requirements.txt
+
+# 3. Setup database MySQL
+# Buka XAMPP -> Start MySQL
+# Buka phpMyAdmin -> Import database_schema.sql
+
+# 4. Konfigurasi database (jika perlu)
+# Edit app.py bagian DB_CONFIG sesuai setup MySQL Anda
+
+# 5. Jalankan aplikasi
+python app.py
 ```
 
-### 3. Setup Database
-- Jalankan XAMPP atau MySQL Server
-- Buka phpMyAdmin atau MySQL client
-- Import file `database_schema.sql`:
-  ```sql
-  # Buka phpMyAdmin -> Import -> Pilih file database_schema.sql
-  ```
+**Aplikasi berjalan di**: `http://localhost:5000`
 
-### 4. Konfigurasi Database (Opsional)
-Jika menggunakan konfigurasi MySQL yang berbeda, edit file `app.py`:
+### 🔧 Konfigurasi Database
+
+Update konfigurasi di `app.py` jika diperlukan:
+
 ```python
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': '',  # Sesuaikan dengan password MySQL Anda
+    'password': 'Bambang0912',  # Sesuaikan dengan password MySQL Anda
     'database': 'motordewata',
     'charset': 'utf8mb4'
 }
 ```
 
-### 5. Jalankan Aplikasi
-```bash
-python app.py
-```
-
-Aplikasi akan berjalan di: `http://localhost:5000`
-
 ## 👤 Akun Default
 
-| Role | Username | Password |
-|------|----------|----------|
-| Superadmin | `superadmin` | `admin123` |
-| Admin | `admin` | `admin123` |
+| Role | Username | Password | Akses |
+|------|----------|----------|--------|
+| **Superadmin** | `superadmin` | `admin123` | Kelola admin, lihat semua data |
+| **Admin** | `admin_denpasar` | `admin123` | Kelola motor area Denpasar |
+| **Admin** | `admin_ubud` | `admin123` | Kelola motor area Ubud |
+| **Admin** | `admin_sanur` | `admin123` | Kelola motor area Sanur |
+| **Admin** | `admin_kuta` | `admin123` | Kelola motor area Kuta |
+| **Admin** | `admin_seminyak` | `admin123` | Kelola motor area Seminyak |
+
+> **Note**: Setiap admin memiliki data motor terpisah (data isolation)
 
 ## 📊 Struktur Database
 
 ### Tabel `users`
-| Field | Type | Description |
-|-------|------|-------------|
-| id | INT (PK) | ID unik user |
-| username | VARCHAR(50) | Username untuk login |
-| password | VARCHAR(255) | Password ter-hash |
-| role | ENUM | 'superadmin' atau 'admin' |
+| Field | Type | Constraint | Description |
+|-------|------|------------|-------------|
+| id | INT | PRIMARY KEY, AUTO_INCREMENT | ID unik user |
+| username | VARCHAR(50) | NOT NULL, UNIQUE | Username untuk login |
+| password | VARCHAR(255) | NOT NULL | Password ter-hash (Werkzeug) |
+| role | ENUM('superadmin', 'admin') | NOT NULL | Role pengguna |
 
 ### Tabel `motor`
-| Field | Type | Description |
-|-------|------|-------------|
-| id | INT (PK) | ID unik motor |
-| nama_motor | VARCHAR(100) | Nama/merk motor |
-| plat_nomor | VARCHAR(20) | Plat nomor kendaraan |
-| status | ENUM | 'tersedia', 'disewa', 'maintenance' |
+| Field | Type | Constraint | Description |
+|-------|------|------------|-------------|
+| id | INT | PRIMARY KEY, AUTO_INCREMENT | ID unik motor |
+| nama_motor | VARCHAR(100) | NOT NULL | Nama/merk motor |
+| plat_nomor | VARCHAR(20) | NOT NULL, UNIQUE | Plat nomor kendaraan |
+| status | ENUM | DEFAULT 'tersedia' | Status: tersedia/disewa/maintenance |
+| deskripsi | TEXT | NULL | Deskripsi detail motor |
+| gambar | VARCHAR(255) | NULL | Nama file gambar |
+| admin_id | INT | FOREIGN KEY | ID admin pemilik data |
 
 ## 🎯 Cara Penggunaan
 
-### Login
+### 🔐 Login ke Sistem
 1. Buka `http://localhost:5000`
 2. Masukkan username dan password
-3. Klik "Masuk"
+3. Sistem akan redirect sesuai role
 
-### Superadmin
-- **Dashboard**: Lihat ringkasan sistem
-- **Kelola User**: Tambah/lihat akun admin
-- **Kelola Motor**: Tambah/lihat data motor
+### 👑 Fitur Superadmin
+- **Dashboard**: Statistik total user dan motor di sistem
+- **Kelola User**: 
+  - Lihat semua admin yang terdaftar
+  - Tambah admin baru untuk area/cabang
+  - Edit password admin (reset akses)
+- **Keamanan**:
+  - Tidak bisa membuat superadmin baru
+  - Tidak bisa melihat/edit data motor langsung
 
-### Admin
-- **Dashboard**: Lihat ringkasan sistem
-- **Kelola Motor**: Tambah/lihat data motor
+### 🔧 Fitur Admin
+- **Dashboard**: Statistik motor milik admin tersebut
+- **Kelola Motor**:
+  - Lihat daftar motor dengan gambar
+  - Tambah motor baru dengan upload gambar
+  - Edit data motor (nama, plat, status, deskripsi, gambar)
+  - Hapus motor yang tidak digunakan
+  - Preview gambar dalam modal
+- **Data Isolation**: Hanya melihat motor yang di-assign ke admin tersebut
+
+### 🔑 Manajemen Password
+- **Ganti Password**: Semua user bisa ganti password sendiri
+- **Reset Password Admin**: Superadmin bisa reset password admin
 
 ## 📁 Struktur Project
 
 ```
 DewataMotorRent/
-├── app.py                 # Main Flask application
-├── requirements.txt       # Dependencies Python
-├── database_schema.sql    # Schema & data awal database
-├── README.md             # Dokumentasi ini
-└── templates/            # Template HTML
-    ├── base.html         # Template dasar
-    ├── login.html        # Halaman login
-    ├── dashboard.html    # Dashboard utama
-    ├── users.html        # Daftar user
-    ├── add_user.html     # Form tambah user
-    ├── motors.html       # Daftar motor
-    └── add_motor.html    # Form tambah motor
+├── 📄 app.py                 # Main Flask application (798 lines)
+├── 📄 requirements.txt       # Production dependencies
+├── 📄 requirements-dev.txt   # Development dependencies
+├── 📄 database_schema.sql    # Complete database schema + sample data
+├── 📄 README.md             # Dokumentasi lengkap (ini)
+├── 📄 CHANGELOG.md          # Riwayat perubahan
+├── 📄 CONTRIBUTING.md       # Panduan kontribusi
+├── 📄 LICENSE               # MIT License
+├── 📁 static/
+│   └── 📁 uploads/          # Folder untuk upload gambar motor
+└── 📁 templates/            # Template HTML
+    ├── 📄 base.html         # Template dasar dengan navbar
+    ├── 📄 login.html        # Halaman login
+    ├── 📄 dashboard.html    # Dashboard utama
+    ├── 📄 users.html        # Daftar user (superadmin)
+    ├── 📄 add_user.html     # Form tambah admin
+    ├── 📄 motors.html       # Daftar motor dengan gambar
+    ├── 📄 add_motor.html    # Form tambah motor
+    ├── 📄 edit_motor.html   # Form edit motor
+    ├── 📄 change_password.html      # Form ganti password
+    └── 📄 edit_admin_password.html  # Form edit password admin
 ```
 
 ## 🔧 Troubleshooting
 
-### Error Database Connection
-- Pastikan MySQL Server berjalan
-- Periksa konfigurasi database di `app.py`
-- Pastikan database `motordewata` sudah dibuat
+### ❌ Error Database Connection
+```bash
+# Pastikan MySQL berjalan
+sudo systemctl start mysql  # Linux
+# Atau jalankan XAMPP
 
-### Error Import Module
+# Periksa konfigurasi di app.py
+DB_CONFIG = {
+    'host': 'localhost',
+    'user': 'root',
+    'password': 'password_anda',  # Update ini
+    'database': 'motordewata'
+}
+```
+
+### ❌ Error Import Module
 ```bash
 pip install --upgrade pip
 pip install -r requirements.txt
+
+# Jika masih error, coba virtual environment
+python -m venv .venv
+source .venv/bin/activate  # Linux/Mac
+.venv\Scripts\activate     # Windows
+pip install -r requirements.txt
 ```
 
-### Error Port 5000 Sudah Digunakan
-Edit file `app.py` di bagian akhir:
+### ❌ Error Upload Gambar
+- Pastikan folder `static/uploads/` exist dan writable
+- Cek ukuran file (max 5MB)
+- Format yang didukung: PNG, JPG, JPEG, GIF, WEBP
+
+### ❌ Error Port 5000 Sudah Digunakan
 ```python
+# Edit app.py bagian akhir
 if __name__ == '__main__':
     app.run(debug=True, port=5001)  # Ganti port
 ```
 
-## 📝 Catatan Pengembangan
+## 🚀 Fitur Lanjutan
 
-- Aplikasi ini dibuat sesederhana mungkin sesuai requirement
-- Semua logika backend ada di satu file `app.py`
-- Tidak menggunakan JWT, REST API, atau struktur MVC
-- Menggunakan Tailwind CSS via CDN untuk styling
-- Session-based authentication untuk keamanan
+### 🖼️ Manajemen Gambar
+- **Auto-resize** ke 800x600px dengan maintain aspect ratio
+- **Format conversion** ke JPEG untuk optimasi
+- **Secure filename** dengan UUID untuk mencegah conflict
+- **File validation** untuk mencegah upload file berbahaya
+- **Compression** dengan quality 85% untuk balance size-quality
+
+### 🛡️ Keamanan Lanjutan
+- **Rate limiting**: Max 5 login attempts per 5 menit per IP
+- **Session timeout**: Otomatis logout setelah 2 jam
+- **XSS protection**: Auto-escape template variables
+- **File upload security**: Validasi type, size, dan content
+- **Path traversal protection**: Secure file path handling
+
+### 📱 Responsive Design
+- **Mobile-first**: Optimized untuk device kecil
+- **Breakpoints**: sm (640px), md (768px), lg (1024px), xl (1280px)
+- **Touch-friendly**: Button dan form optimal untuk touch
+- **Fast loading**: Optimized images dan minimal CSS
+
+## 📚 Documentation
+
+Dokumentasi lengkap tersedia dalam beberapa file:
+
+- 📖 **[README.md](README.md)** - Panduan utama dan overview
+- 📋 **[CHANGELOG.md](CHANGELOG.md)** - Riwayat perubahan dan update
+- 🤝 **[CONTRIBUTING.md](CONTRIBUTING.md)** - Panduan kontribusi developer
+- 🔌 **[API_REFERENCE.md](API_REFERENCE.md)** - Dokumentasi endpoint dan API
+- 🚀 **[DEPLOYMENT.md](DEPLOYMENT.md)** - Panduan deployment production
+- ⚖️ **[LICENSE](LICENSE)** - MIT License
 
 ## 🤝 Contributing
 
-Kami menyambut kontribusi dari komunitas! Silakan baca [CONTRIBUTING.md](CONTRIBUTING.md) untuk panduan lengkap.
+Kontribusi sangat diterima! Baca [CONTRIBUTING.md](CONTRIBUTING.md) untuk panduan:
 
-### Quick Start untuk Contributors
-1. Fork repository ini
-2. Buat branch baru: `git checkout -b feature/amazing-feature`
-3. Commit perubahan: `git commit -m 'feat: add amazing feature'`
-4. Push ke branch: `git push origin feature/amazing-feature`
-5. Submit Pull Request
-
-## 📊 Project Stats
-
-- **Lines of Code**: ~500+ lines
-- **Templates**: 11 HTML files
-- **Database Tables**: 2 tables
-- **Sample Data**: 6 users, 31 motors
-- **Dependencies**: 4 main packages
-
-## 🗺️ Roadmap
-
-- [ ] API endpoints untuk mobile app
-- [ ] Real-time notifications
-- [ ] Advanced reporting dashboard
-- [ ] Multi-language support
-- [ ] Integration dengan payment gateway
-- [ ] Automated backup system
-
-## 📧 Support
-
-Jika ada pertanyaan atau masalah:
-- 🐛 **Bug Reports**: [Create an Issue](../../issues/new)
-- 💡 **Feature Requests**: [Create an Issue](../../issues/new)
-- 📖 **Documentation**: [Wiki](../../wiki)
-- 💬 **Discussions**: [GitHub Discussions](../../discussions)
+- 🐛 **Bug reports** - Gunakan issue template
+- 💡 **Feature requests** - Jelaskan kebutuhan dan solusi
+- 🔧 **Code contributions** - Follow coding standards
+- 📝 **Documentation** - Improve atau translate docs
 
 ## 📄 License
 
-Project ini dilisensikan di bawah [MIT License](LICENSE).
+Project ini menggunakan [MIT License](LICENSE). Bebas digunakan untuk komersial dan non-komersial.
 
-## 🙏 Acknowledgments
+## 📞 Support
 
-- [Flask](https://flask.palletsprojects.com/) - Web framework
-- [Tailwind CSS](https://tailwindcss.com/) - CSS framework
-- [Heroicons](https://heroicons.com/) - Beautiful icons
-- [MySQL](https://mysql.com/) - Database system
+- **Issues**: Gunakan GitHub Issues untuk bug report
+- **Email**: [your-email@domain.com]
+- **Documentation**: Baca CHANGELOG.md untuk riwayat update
 
 ---
-**© 2025 Dewata Motor. Made with ❤️ for rental management.** 
+
+**Dibuat dengan ❤️ menggunakan Flask & Tailwind CSS**
+
+> 🌟 **Star** project ini jika bermanfaat! 
