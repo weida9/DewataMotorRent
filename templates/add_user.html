@@ -3,60 +3,84 @@
 {% block title %}Tambah User - Dewata Motor{% endblock %}
 
 {% block content %}
-<div class="px-4 py-6 sm:px-0">
-    <div class="max-w-lg mx-auto">
-        <div>
-            <h1 class="text-xl font-semibold text-gray-900">Tambah User Baru</h1>
-            <p class="mt-2 text-sm text-gray-700">Buat akun user baru untuk sistem.</p>
+<div class="space-y-6">
+    <!-- Header Section -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="text-center">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Tambah Admin Baru</h1>
+            <p class="mt-2 text-sm sm:text-base text-gray-600">Buat akun admin baru untuk sistem rental motor</p>
         </div>
+    </div>
 
-        <form method="POST" class="mt-6 space-y-6">
-            <div>
-                <label for="username" class="block text-sm font-medium text-gray-700">
-                    Username
-                </label>
-                <div class="mt-1">
+    <!-- Main Form -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div class="p-6 sm:p-8 max-w-2xl mx-auto">
+            <form method="POST" class="space-y-6">
+                <div>
+                    <label for="username" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Username
+                    </label>
                     <input type="text" name="username" id="username" required
-                           class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                           placeholder="Masukkan username">
+                           class="w-full px-4 py-3 text-base border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                           placeholder="Masukkan username untuk admin">
                 </div>
-            </div>
 
-            <div>
-                <label for="password" class="block text-sm font-medium text-gray-700">
-                    Password
-                </label>
-                <div class="mt-1">
+                <div>
+                    <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Password
+                    </label>
                     <input type="password" name="password" id="password" required
-                           class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                           class="w-full px-4 py-3 text-base border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md"
                            placeholder="Masukkan password">
                 </div>
-            </div>
 
-            <div>
-                <label for="role" class="block text-sm font-medium text-gray-700">
-                    Role
-                </label>
-                <div class="mt-1">
+                <div>
+                    <label for="role" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Role
+                    </label>
                     <select name="role" id="role" required
-                            class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            class="w-full px-4 py-3 text-base border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:shadow-md">
                         <option value="">Pilih Role</option>
                         <option value="admin" selected>Admin</option>
                     </select>
                 </div>
-            </div>
 
-            <div class="flex space-x-3">
-                <button type="submit"
-                        class="flex-1 justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    Simpan User
-                </button>
-                <a href="{{ url_for('users') }}"
-                   class="flex-1 justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-center">
-                    Batal
-                </a>
-            </div>
-        </form>
+                <div class="bg-blue-50 rounded-xl p-4 border border-blue-200">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-blue-800">Informasi Admin</h3>
+                            <div class="mt-2 text-sm text-blue-700">
+                                <p>Admin yang dibuat akan dapat mengelola motor rental dalam sistem dan memiliki akses penuh ke data motor mereka.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200 pt-6">
+                    <div class="flex flex-col sm:flex-row gap-4 sm:justify-end">
+                        <a href="{{ url_for('users') }}"
+                           class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-xl text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:shadow-md">
+                            <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Batal
+                        </a>
+                        <button type="submit"
+                                class="inline-flex items-center justify-center px-8 py-3 border border-transparent rounded-xl text-base font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                            <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Simpan Admin
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %} 

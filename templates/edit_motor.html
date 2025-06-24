@@ -3,147 +3,245 @@
 {% block title %}Edit Motor - Dewata Motor{% endblock %}
 
 {% block content %}
-<div class="px-4 py-6 sm:px-6 lg:px-8">
-    <div class="max-w-2xl mx-auto">
-        <div>
-            <h1 class="text-xl font-semibold text-gray-900">Edit Motor</h1>
-            <p class="mt-2 text-sm text-gray-700">Update informasi motor {{ motor[1] }}.</p>
+<div class="space-y-6">
+    <!-- Header Section -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Edit Motor</h1>
+                <p class="mt-2 text-sm sm:text-base text-gray-600">Update informasi motor {{ motor[1] }}</p>
+            </div>
+            <div class="mt-4 sm:mt-0">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    Mode Edit
+                </span>
+            </div>
         </div>
+    </div>
 
-        <form method="POST" enctype="multipart/form-data" class="mt-6 space-y-6">
-            <div>
-                <label for="nama_motor" class="block text-sm font-medium text-gray-700">
-                    Nama Motor
-                </label>
-                <div class="mt-1">
-                    <input type="text" name="nama_motor" id="nama_motor" required
-                           value="{{ motor[1] }}"
-                           class="appearance-none block w-full px-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all duration-200"
-                           placeholder="Contoh: Honda Scoopy, Yamaha NMAX">
+    <!-- Main Form -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <form method="POST" enctype="multipart/form-data" class="p-6 sm:p-8">
+            
+            <!-- Basic Information Section -->
+            <div class="mb-8">
+                <div class="border-b border-gray-200 pb-4 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Informasi Dasar
+                    </h3>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Nama Motor -->
+                    <div class="lg:col-span-2">
+                        <label for="nama_motor" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Nama Motor
+                        </label>
+                        <input type="text" name="nama_motor" id="nama_motor" required
+                               value="{{ motor[1] }}"
+                               class="w-full px-4 py-3 text-base border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                               placeholder="Contoh: Honda Scoopy, Yamaha NMAX">
+                    </div>
+
+                    <!-- Plat Nomor -->
+                    <div>
+                        <label for="plat_nomor" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Plat Nomor
+                        </label>
+                        <input type="text" name="plat_nomor" id="plat_nomor" required
+                               value="{{ motor[2] }}"
+                               class="w-full px-4 py-3 text-base border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                               placeholder="Contoh: DK 1234 AB">
+                    </div>
+
+                    <!-- Status -->
+                    <div>
+                        <label for="status" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Status Motor
+                        </label>
+                        <select name="status" id="status" required
+                                class="w-full px-4 py-3 text-base border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:shadow-md">
+                            <option value="">Pilih Status</option>
+                            <option value="tersedia" {% if motor[3] == 'tersedia' %}selected{% endif %}>Tersedia</option>
+                            <option value="disewa" {% if motor[3] == 'disewa' %}selected{% endif %}>Disewa</option>
+                            <option value="maintenance" {% if motor[3] == 'maintenance' %}selected{% endif %}>Maintenance</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Status Info -->
+                <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-green-500 rounded-full mr-2 flex-shrink-0"></div>
+                            <span><strong>Tersedia:</strong> Motor siap disewa</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-red-500 rounded-full mr-2 flex-shrink-0"></div>
+                            <span><strong>Disewa:</strong> Sedang disewa pelanggan</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full mr-2 flex-shrink-0"></div>
+                            <span><strong>Maintenance:</strong> Dalam perawatan</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div>
-                <label for="plat_nomor" class="block text-sm font-medium text-gray-700">
-                    Plat Nomor
-                </label>
-                <div class="mt-1">
-                    <input type="text" name="plat_nomor" id="plat_nomor" required
-                           value="{{ motor[2] }}"
-                           class="appearance-none block w-full px-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all duration-200"
-                           placeholder="Contoh: DK 1234 AB">
+            <!-- Description Section -->
+            <div class="mb-8">
+                <div class="border-b border-gray-200 pb-4 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+                        </svg>
+                        Deskripsi Motor
+                    </h3>
+                </div>
+
+                <div>
+                    <label for="deskripsi" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Deskripsi Lengkap
+                    </label>
+                    <textarea name="deskripsi" id="deskripsi" rows="5"
+                           class="w-full px-4 py-3 text-base border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-y transition-all duration-200 shadow-sm hover:shadow-md"
+                           placeholder="Deskripsi motor: spesifikasi, warna, kondisi, fitur khusus, tahun, kapasitas mesin, dll...">{{ motor[4] if motor[4] else '' }}</textarea>
+                    <p class="mt-2 text-sm text-gray-500">
+                        Jelaskan fitur, kondisi, atau informasi khusus tentang motor ini untuk membantu pelanggan.
+                    </p>
                 </div>
             </div>
 
-            <div>
-                <label for="status" class="block text-sm font-medium text-gray-700">
-                    Status
-                </label>
-                <div class="mt-1">
-                    <select name="status" id="status" required
-                            class="block w-full px-3 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all duration-200">
-                        <option value="">Pilih Status</option>
-                        <option value="tersedia" {% if motor[3] == 'tersedia' %}selected{% endif %}>Tersedia</option>
-                        <option value="disewa" {% if motor[3] == 'disewa' %}selected{% endif %}>Disewa</option>
-                        <option value="maintenance" {% if motor[3] == 'maintenance' %}selected{% endif %}>Maintenance</option>
-                    </select>
+            <!-- Image Section -->
+            <div class="mb-8">
+                <div class="border-b border-gray-200 pb-4 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        Gambar Motor
+                    </h3>
                 </div>
-                <p class="mt-2 text-sm text-gray-500">
-                    • <strong>Tersedia:</strong> Motor siap untuk disewa<br>
-                    • <strong>Disewa:</strong> Motor sedang disewa pelanggan<br>
-                    • <strong>Maintenance:</strong> Motor sedang dalam perawatan
-                </p>
-            </div>
-
-            <div>
-                <label for="deskripsi" class="block text-sm font-medium text-gray-700">
-                    Deskripsi
-                </label>
-                <div class="mt-1">
-                    <textarea name="deskripsi" id="deskripsi" rows="4"
-                           class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm resize-y min-h-20"
-                           placeholder="Deskripsi motor (opsional): spesifikasi, warna, kondisi, fitur khusus...">{{ motor[4] if motor[4] else '' }}</textarea>
-                </div>
-                <p class="mt-2 text-sm text-gray-500">
-                    Jelaskan fitur, kondisi, atau informasi khusus tentang motor ini untuk membantu pelanggan.
-                </p>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Gambar Motor
-                </label>
                 
                 <!-- Current Image -->
                 {% if motor[5] %}
-                <div class="mb-4 p-4 bg-gray-50 rounded-lg border">
-                    <p class="text-sm font-medium text-gray-700 mb-3">Gambar saat ini:</p>
-                    <div class="flex flex-col sm:flex-row sm:items-start sm:space-x-4">
-                        <div class="mb-3 sm:mb-0">
-                            <img src="{{ url_for('uploaded_file', filename=motor[5]) }}" 
-                                 alt="{{ motor[1] }}" 
-                                 class="w-40 h-30 sm:w-48 sm:h-36 object-cover rounded-lg border border-gray-300 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200"
-                                 onclick="showCurrentImageModal('{{ url_for('uploaded_file', filename=motor[5]) }}', '{{ motor[1] }}')">
-                        </div>
-                        <div class="flex-1">
-                            <label class="inline-flex items-center cursor-pointer hover:bg-red-50 p-2 rounded-lg transition-colors duration-200">
-                                <input type="checkbox" name="hapus_gambar" class="form-checkbox h-4 w-4 text-red-600 rounded border-gray-300 focus:ring-red-500">
-                                <span class="ml-2 text-sm text-red-600 font-medium">Hapus gambar ini</span>
-                            </label>
-                            <p class="text-xs text-gray-500 mt-2 ml-6">Centang untuk menghapus gambar tanpa mengganti dengan yang baru</p>
+                <div class="bg-gray-50 rounded-xl border border-gray-200 mb-6">
+                    <div class="p-6">
+                        <p class="text-sm font-semibold text-gray-700 mb-4">Gambar saat ini:</p>
+                        <div class="flex flex-col lg:flex-row lg:items-start gap-6">
+                            <div class="flex-shrink-0">
+                                <img src="{{ url_for('uploaded_file', filename=motor[5]) }}" 
+                                     alt="{{ motor[1] }}" 
+                                     class="w-full max-w-xs sm:w-64 sm:h-48 object-cover rounded-xl border border-gray-300 shadow-lg cursor-pointer hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                                     data-image-src="{{ url_for('uploaded_file', filename=motor[5]) }}"
+                                     data-motor-name="{{ motor[1]|e }}"
+                                     onclick="showCurrentImageModal(this.getAttribute('data-image-src'), this.getAttribute('data-motor-name'))">
+                            </div>
+                            <div class="flex-1 space-y-4">
+                                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                                    <label class="flex items-start space-x-3 cursor-pointer hover:bg-red-50 p-2 rounded-lg transition-colors duration-200">
+                                        <input type="checkbox" name="hapus_gambar" class="mt-1 h-5 w-5 text-red-600 rounded border-gray-300 focus:ring-red-500 flex-shrink-0">
+                                        <div>
+                                            <span class="text-sm font-medium text-red-600">Hapus gambar ini</span>
+                                            <p class="text-xs text-gray-500 mt-1">Centang untuk menghapus gambar tanpa mengganti dengan yang baru</p>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="text-xs text-gray-500 bg-white rounded-lg p-3 border border-gray-200">
+                                    <p><strong>Tips:</strong> Klik gambar untuk melihat dalam ukuran penuh</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 {% else %}
-                <div class="mb-4 p-4 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                    <p class="text-sm text-gray-500 italic text-center">Belum ada gambar yang diupload</p>
+                <div class="bg-gray-50 rounded-xl border border-dashed border-gray-300 p-8 mb-6">
+                    <div class="text-center">
+                        <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <p class="text-gray-500 italic">Belum ada gambar yang diupload</p>
+                    </div>
                 </div>
                 {% endif %}
                 
                 <!-- Upload New Image -->
-                <div>
-                    <div class="flex justify-center px-4 sm:px-6 pt-4 sm:pt-5 pb-4 sm:pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-400 transition-colors duration-200">
-                        <div class="space-y-1 text-center">
-                            <svg class="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            <div class="flex flex-col sm:flex-row justify-center items-center text-sm text-gray-600">
-                                <label for="gambar" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                <div class="border border-gray-300 border-dashed rounded-xl hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 mb-4">
+                    <div class="flex flex-col items-center justify-center px-6 py-8 sm:py-12">
+                        <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <div class="text-center space-y-2">
+                            <div class="flex flex-col sm:flex-row justify-center items-center text-base text-gray-600">
+                                <label for="gambar" class="relative cursor-pointer bg-white rounded-lg px-4 py-2 font-semibold text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 border border-blue-200 hover:border-blue-300 transition-all duration-200">
                                     <span>Upload gambar baru</span>
                                     <input id="gambar" name="gambar" type="file" accept="image/*" class="sr-only">
                                 </label>
-                                <p class="sm:pl-1 mt-1 sm:mt-0">atau drag and drop</p>
+                                <p class="sm:ml-2 mt-2 sm:mt-0">atau drag and drop disini</p>
                             </div>
-                            <p class="text-xs text-gray-500">
+                            <p class="text-sm text-gray-500">
                                 PNG, JPG, JPEG, GIF, WEBP hingga 5MB
                             </p>
                         </div>
                     </div>
                 </div>
-                <p class="mt-2 text-sm text-gray-500">
-                    Upload gambar baru untuk mengganti yang lama, atau centang "Hapus gambar" untuk menghapus tanpa menggantinya.
-                </p>
+                
+                <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                    <p class="text-sm text-blue-700">
+                        <strong>Catatan:</strong> Upload gambar baru untuk mengganti yang lama, atau centang "Hapus gambar" untuk menghapus tanpa menggantinya.
+                    </p>
+                </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-                <button type="submit"
-                        class="flex-1 inline-flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
-                    <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Update Motor
-                </button>
-                <a href="{{ url_for('motors') }}"
-                   class="flex-1 inline-flex justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
-                    <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                    Batal
-                </a>
+            <!-- Action Buttons -->
+            <div class="border-t border-gray-200 pt-6">
+                <div class="flex flex-col lg:flex-row gap-4 lg:justify-between">
+                    <!-- Left side: Delete button -->
+                    <div class="flex">
+                        <button type="button" onclick="confirmDeleteMotor()"
+                                class="inline-flex items-center justify-center px-6 py-3 border border-red-300 rounded-xl text-base font-medium text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 shadow-sm hover:shadow-md">
+                            <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            Hapus Motor
+                        </button>
+                    </div>
+                    
+                    <!-- Right side: Save and Cancel buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="{{ url_for('motors') }}"
+                           class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-xl text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:shadow-md">
+                            <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Batal
+                        </a>
+                        <button type="submit"
+                                class="inline-flex items-center justify-center px-8 py-3 border border-transparent rounded-xl text-base font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                            <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Update Motor
+                        </button>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
 </div>
+
+<!-- Hidden data for JavaScript -->
+<div id="motor-data" 
+     data-name="{{ motor[1]|e }}" 
+     data-plat="{{ motor[2]|e }}" 
+     data-id="{{ motor[0] }}" 
+     style="display: none;"></div>
 
 <script>
 // Image preview functionality
@@ -177,15 +275,26 @@ document.getElementById('gambar').addEventListener('change', function(e) {
             // Create new preview
             const preview = document.createElement('div');
             preview.id = 'new-image-preview';
-            preview.className = 'mt-4 p-4 border border-blue-200 rounded-lg bg-blue-50';
+            preview.className = 'mt-4 p-6 border border-green-200 rounded-xl bg-green-50';
             preview.innerHTML = `
-                <p class="text-sm text-blue-600 mb-2">Preview gambar baru:</p>
-                <img src="${e.target.result}" alt="Preview" class="w-32 h-24 object-cover rounded-lg border border-gray-300 shadow-sm">
-                <p class="text-xs text-blue-500 mt-2">${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</p>
+                <div class="flex items-center mb-4">
+                    <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <p class="text-sm font-semibold text-green-700">Preview gambar baru:</p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <img src="${e.target.result}" alt="Preview" class="w-full sm:w-48 h-36 object-cover rounded-lg border border-gray-300 shadow-lg">
+                    <div class="flex-1 space-y-2">
+                        <p class="text-sm font-medium text-green-700">${file.name}</p>
+                        <p class="text-xs text-green-600">Ukuran: ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                        <p class="text-xs text-gray-600">Gambar ini akan mengganti gambar yang sudah ada</p>
+                    </div>
+                </div>
             `;
             
             // Insert after the upload area
-            const uploadArea = document.querySelector('[for="gambar"]').closest('div');
+            const uploadArea = document.querySelector('[for="gambar"]').closest('.border-dashed');
             uploadArea.parentNode.insertBefore(preview, uploadArea.nextSibling);
         };
         reader.readAsDataURL(file);
@@ -242,15 +351,15 @@ function showCurrentImageModal(imageSrc, motorName) {
         modal.id = 'currentImageModal';
         modal.className = 'fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4';
         modal.innerHTML = `
-            <div class="relative max-w-4xl max-h-full">
-                <button onclick="closeCurrentImageModal()" class="absolute -top-10 right-0 text-white hover:text-gray-300 text-2xl font-bold">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="relative max-w-6xl max-h-full">
+                <button onclick="closeCurrentImageModal()" class="absolute -top-12 right-0 text-white hover:text-gray-300 text-2xl font-bold bg-black bg-opacity-50 rounded-full p-2 transition-all duration-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
-                <img id="currentModalImage" src="" alt="" class="max-w-full max-h-screen object-contain rounded-lg shadow-2xl">
-                <div id="currentModalTitle" class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4 rounded-b-lg">
-                    <h3 class="text-lg font-semibold"></h3>
+                <img id="currentModalImage" src="" alt="" class="max-w-full max-h-screen object-contain rounded-xl shadow-2xl">
+                <div id="currentModalTitle" class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent text-white p-6 rounded-b-xl">
+                    <h3 class="text-xl font-bold"></h3>
                 </div>
             </div>
         `;
@@ -289,7 +398,99 @@ function closeCurrentImageModal() {
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeCurrentImageModal();
+        closeDeleteModal();
     }
 });
+
+// Delete confirmation functionality
+function confirmDeleteMotor() {
+    const motorData = document.getElementById('motor-data');
+    const motorName = motorData.getAttribute('data-name');
+    const motorPlat = motorData.getAttribute('data-plat');
+    const motorId = motorData.getAttribute('data-id');
+    
+    // Create modal if it doesn't exist
+    let modal = document.getElementById('deleteConfirmModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'deleteConfirmModal';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4';
+        
+        const modalContent = document.createElement('div');
+        modalContent.className = 'bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300';
+        
+        modalContent.innerHTML = 
+            '<div class="p-6">' +
+                '<!-- Warning Icon -->' +
+                '<div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full">' +
+                    '<svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>' +
+                    '</svg>' +
+                '</div>' +
+                
+                '<!-- Title & Message -->' +
+                '<div class="text-center mb-6">' +
+                    '<h3 class="text-xl font-bold text-gray-900 mb-2">Konfirmasi Hapus Motor</h3>' +
+                    '<p class="text-gray-600 mb-4">' +
+                        'Apakah Anda yakin ingin menghapus motor <strong>"' + motorName + '"</strong> dengan plat nomor <strong>"' + motorPlat + '"</strong>?' +
+                    '</p>' +
+                    '<div class="bg-red-50 border border-red-200 rounded-lg p-3">' +
+                        '<p class="text-sm text-red-700">' +
+                            '<strong>⚠️ Peringatan:</strong> Data yang dihapus tidak dapat dikembalikan lagi!' +
+                        '</p>' +
+                    '</div>' +
+                '</div>' +
+                
+                '<!-- Action Buttons -->' +
+                '<div class="flex flex-col sm:flex-row gap-3">' +
+                    '<button type="button" onclick="closeDeleteModal()" class="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 font-medium transition-all duration-200">' +
+                        '<svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>' +
+                        '</svg>' +
+                        'Batal' +
+                    '</button>' +
+                    '<button type="button" onclick="executeDelete()" class="flex-1 px-4 py-3 text-white bg-red-600 rounded-xl hover:bg-red-700 font-medium transition-all duration-200 shadow-lg hover:shadow-xl">' +
+                        '<svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>' +
+                        '</svg>' +
+                        'Ya, Hapus Motor' +
+                    '</button>' +
+                '</div>' +
+            '</div>';
+            
+        modal.appendChild(modalContent);
+        document.body.appendChild(modal);
+        
+        // Add event listeners
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeDeleteModal();
+            }
+        });
+    }
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('deleteConfirmModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+function executeDelete() {
+    // Create a form and submit it for deletion
+    const motorId = document.getElementById('motor-data').getAttribute('data-id');
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/delete_motor/' + motorId;
+    document.body.appendChild(form);
+    form.submit();
+}
 </script>
 {% endblock %} 

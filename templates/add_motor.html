@@ -3,109 +3,130 @@
 {% block title %}Tambah Motor - Dewata Motor{% endblock %}
 
 {% block content %}
-<div class="px-4 py-6 sm:px-0">
-    <div class="max-w-lg mx-auto">
-        <div>
-            <h1 class="text-xl font-semibold text-gray-900">Tambah Motor Baru</h1>
-            <p class="mt-2 text-sm text-gray-700">Tambahkan motor baru ke dalam sistem rental.</p>
+<div class="space-y-6">
+    <!-- Header Section -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="text-center">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">Tambah Motor Baru</h1>
+            <p class="mt-2 text-sm sm:text-base text-gray-600">Tambahkan motor baru ke dalam sistem rental</p>
         </div>
+    </div>
 
-        <form method="POST" enctype="multipart/form-data" class="mt-6 space-y-6">
-            <div>
-                <label for="nama_motor" class="block text-sm font-medium text-gray-700">
-                    Nama Motor
-                </label>
-                <div class="mt-1">
-                    <input type="text" name="nama_motor" id="nama_motor" required
-                           class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                           placeholder="Contoh: Honda Scoopy, Yamaha NMAX">
+    <!-- Main Form -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div class="p-6 sm:p-8">
+            <form method="POST" enctype="multipart/form-data" class="space-y-8 max-w-4xl mx-auto">
+                <!-- Motor Details Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <label for="nama_motor" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Nama Motor
+                        </label>
+                        <input type="text" name="nama_motor" id="nama_motor" required
+                               class="w-full px-4 py-3 text-base border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                               placeholder="Contoh: Honda Scoopy, Yamaha NMAX">
+                    </div>
+
+                    <div>
+                        <label for="plat_nomor" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Plat Nomor
+                        </label>
+                        <input type="text" name="plat_nomor" id="plat_nomor" required
+                               class="w-full px-4 py-3 text-base border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                               placeholder="Contoh: DK 1234 AB">
+                    </div>
                 </div>
-            </div>
 
-            <div>
-                <label for="plat_nomor" class="block text-sm font-medium text-gray-700">
-                    Plat Nomor
-                </label>
-                <div class="mt-1">
-                    <input type="text" name="plat_nomor" id="plat_nomor" required
-                           class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                           placeholder="Contoh: DK 1234 AB">
-                </div>
-            </div>
-
-            <div>
-                <label for="status" class="block text-sm font-medium text-gray-700">
-                    Status
-                </label>
-                <div class="mt-1">
+                <div>
+                    <label for="status" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Status Motor
+                    </label>
                     <select name="status" id="status" required
-                            class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                            class="w-full px-4 py-3 text-base border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 hover:shadow-md">
                         <option value="">Pilih Status</option>
                         <option value="tersedia" selected>Tersedia</option>
                         <option value="disewa">Disewa</option>
                         <option value="maintenance">Maintenance</option>
                     </select>
-                </div>
-                <p class="mt-2 text-sm text-gray-500">
-                    • <strong>Tersedia:</strong> Motor siap untuk disewa<br>
-                    • <strong>Disewa:</strong> Motor sedang disewa pelanggan<br>
-                    • <strong>Maintenance:</strong> Motor sedang dalam perawatan
-                </p>
-            </div>
-
-            <div>
-                <label for="deskripsi" class="block text-sm font-medium text-gray-700">
-                    Deskripsi
-                </label>
-                <div class="mt-1">
-                    <textarea name="deskripsi" id="deskripsi" rows="3"
-                           class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                           placeholder="Deskripsi motor (opsional): spesifikasi, warna, kondisi, fitur khusus..."></textarea>
-                </div>
-                <p class="mt-2 text-sm text-gray-500">
-                    Jelaskan fitur, kondisi, atau informasi khusus tentang motor ini untuk membantu pelanggan.
-                </p>
-            </div>
-
-            <div>
-                <label for="gambar" class="block text-sm font-medium text-gray-700">
-                    Gambar Motor
-                </label>
-                <div class="mt-1">
-                    <div class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-green-400 transition-colors duration-200">
-                        <div class="space-y-1 text-center">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            <div class="flex text-sm text-gray-600">
-                                <label for="gambar" class="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500">
-                                    <span>Upload gambar</span>
-                                    <input id="gambar" name="gambar" type="file" accept="image/*" class="sr-only">
-                                </label>
-                                <p class="pl-1">atau drag and drop</p>
+                    <div class="mt-3 bg-gray-50 rounded-xl p-4 border border-gray-200">
+                        <div class="text-sm text-gray-600 space-y-1">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                                <strong>Tersedia:</strong> Motor siap untuk disewa
                             </div>
-                            <p class="text-xs text-gray-500">
-                                PNG, JPG, JPEG, GIF, WEBP hingga 5MB
-                            </p>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                                <strong>Disewa:</strong> Motor sedang disewa pelanggan
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+                                <strong>Maintenance:</strong> Motor sedang dalam perawatan
+                            </div>
                         </div>
                     </div>
                 </div>
-                <p class="mt-2 text-sm text-gray-500">
-                    Upload foto motor untuk menarik pelanggan. Gambar akan diubah ukurannya secara otomatis.
-                </p>
-            </div>
 
-            <div class="flex space-x-3">
-                <button type="submit"
-                        class="flex-1 justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                    🏍️ Simpan Motor
-                </button>
-                <a href="{{ url_for('motors') }}"
-                   class="flex-1 justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 text-center">
-                    Batal
-                </a>
-            </div>
-        </form>
+                <div>
+                    <label for="deskripsi" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Deskripsi Motor
+                    </label>
+                    <textarea name="deskripsi" id="deskripsi" rows="4"
+                           class="w-full px-4 py-3 text-base border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                           placeholder="Deskripsi motor: spesifikasi, warna, kondisi, fitur khusus, tahun pembuatan..."></textarea>
+                    <p class="mt-2 text-sm text-gray-500">
+                        Jelaskan fitur, kondisi, atau informasi khusus tentang motor ini untuk membantu pelanggan.
+                    </p>
+                </div>
+
+                <div>
+                    <label for="gambar" class="block text-sm font-semibold text-gray-700 mb-3">
+                        Foto Motor
+                    </label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl hover:border-green-400 transition-colors duration-200 bg-gray-50 hover:bg-green-50">
+                        <div class="p-8">
+                            <div class="text-center">
+                                <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <div class="text-base text-gray-600 mb-2">
+                                    <label for="gambar" class="relative cursor-pointer bg-white rounded-lg font-semibold text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500 px-3 py-1 transition-all duration-200">
+                                        <span>Pilih gambar</span>
+                                        <input id="gambar" name="gambar" type="file" accept="image/*" class="sr-only">
+                                    </label>
+                                    <span>atau drag and drop disini</span>
+                                </div>
+                                <p class="text-sm text-gray-500">
+                                    PNG, JPG, JPEG, GIF, WEBP hingga 5MB
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="mt-3 text-sm text-gray-500">
+                        Upload foto motor untuk menarik pelanggan. Gambar akan diubah ukurannya secara otomatis.
+                    </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="border-t border-gray-200 pt-8">
+                    <div class="flex flex-col sm:flex-row gap-4 sm:justify-end">
+                        <a href="{{ url_for('motors') }}"
+                           class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-xl text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-sm hover:shadow-md">
+                            <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Batal
+                        </a>
+                        <button type="submit"
+                                class="inline-flex items-center justify-center px-8 py-3 border border-transparent rounded-xl text-base font-medium text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                            <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Simpan Motor
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -141,16 +162,26 @@ document.getElementById('gambar').addEventListener('change', function(e) {
             // Create new preview
             const preview = document.createElement('div');
             preview.id = 'image-preview';
-            preview.className = 'mt-4 p-4 border border-gray-200 rounded-lg bg-gray-50';
+            preview.className = 'mt-4 p-4 bg-white border border-gray-200 rounded-xl shadow-sm';
             preview.innerHTML = `
-                <p class="text-sm text-gray-600 mb-2">Preview gambar:</p>
-                <img src="${e.target.result}" alt="Preview" class="w-32 h-24 object-cover rounded-lg border border-gray-300 shadow-sm">
-                <p class="text-xs text-gray-500 mt-2">${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</p>
+                <p class="text-sm font-medium text-gray-700 mb-3">Preview gambar:</p>
+                <div class="flex items-start gap-4">
+                    <img src="${e.target.result}" alt="Preview" class="w-32 h-24 object-cover rounded-lg border border-gray-300 shadow-sm">
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-900">${file.name}</p>
+                        <p class="text-xs text-gray-500 mt-1">Ukuran: ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                        <div class="mt-2">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Siap diupload
+                            </span>
+                        </div>
+                    </div>
+                </div>
             `;
             
             // Insert after the upload area
-            const uploadArea = document.querySelector('[for="gambar"]').closest('.mt-1');
-            uploadArea.parentNode.insertBefore(preview, uploadArea.nextSibling);
+            const uploadArea = document.querySelector('[for="gambar"]').closest('div').parentNode;
+            uploadArea.appendChild(preview);
         };
         reader.readAsDataURL(file);
     }

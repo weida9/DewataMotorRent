@@ -45,14 +45,95 @@
         html, body {
             height: 100%;
         }
+        
+        /* Ensure consistent layout across all screen sizes and devices */
+        #app-wrapper {
+            min-height: 100vh;
+            min-height: 100dvh; /* Dynamic viewport height for mobile */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0; /* Allow flex item to shrink */
+        }
+        
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0; /* Allow flex item to shrink */
+        }
+        
+        /* Responsive enhancements for different screen sizes */
+        @media (min-width: 3840px) {
+            /* 4K and ultra-wide displays */
+            .content-wrapper {
+                min-height: calc(100vh - 220px);
+                max-width: 65% !important; /* Slightly narrower on very large screens for readability */
+            }
+        }
+        
+        @media (min-width: 2560px) and (max-width: 3839px) {
+            /* 2K displays */
+            .content-wrapper {
+                min-height: calc(100vh - 200px);
+                max-width: 70% !important;
+            }
+        }
+        
+        @media (min-width: 1920px) and (max-width: 2559px) {
+            /* Full HD displays */
+            .content-wrapper {
+                min-height: calc(100vh - 200px);
+                max-width: 75% !important;
+            }
+        }
+        
+        @media (min-width: 1200px) and (max-width: 1919px) {
+            /* Large desktop displays */
+            .content-wrapper {
+                min-height: calc(100vh - 180px);
+                max-width: 85% !important;
+            }
+        }
+        
+        @media (min-width: 768px) and (max-width: 1199px) {
+            /* Tablet displays */
+            .content-wrapper {
+                min-height: calc(100vh - 160px);
+                max-width: 90% !important;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            /* Mobile optimizations */
+            .content-wrapper {
+                min-height: calc(100vh - 160px);
+                max-width: 95% !important;
+            }
+        }
+        
+        /* Ensure proper scrolling behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen font-sans antialiased flex flex-col">
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 font-sans antialiased">
+<div id="app-wrapper">
     <!-- Navigation -->
     {% if session.user_id %}
     <nav class="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-white/90">
-        <div class="max-w-full xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="w-full max-w-[95%] lg:max-w-[85%] xl:max-w-[75%] 2xl:max-w-[70%] mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <div class="flex items-center space-x-3">
@@ -142,7 +223,7 @@
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            <div class="max-w-full xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+            <div class="w-full max-w-[95%] lg:max-w-[85%] xl:max-w-[75%] 2xl:max-w-[70%] mx-auto px-4 sm:px-6 lg:px-8 pt-4">
                 {% for category, message in messages %}
                     {% set alert_class = 'bg-red-50 border border-red-200 text-red-800' if category == 'danger' else 'bg-green-50 border border-green-200 text-green-800' %}
                     {% set icon = '⚠️' if category == 'danger' else '✅' %}
@@ -158,19 +239,20 @@
     {% endwith %}
 
     <!-- Main Content -->
-    <main class="flex-1 w-full min-h-0">
-        <div class="max-w-full xl:max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 h-full">
+    <main class="bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+        <div class="content-wrapper w-full max-w-[95%] lg:max-w-[85%] xl:max-w-[75%] 2xl:max-w-[70%] mx-auto py-6 px-4 sm:px-6 lg:px-8">
             {% block content %}{% endblock %}
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-auto shrink-0">
-        <div class="max-w-full xl:max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+    <footer class="bg-white border-t border-gray-200">
+        <div class="w-full max-w-[95%] lg:max-w-[85%] xl:max-w-[75%] 2xl:max-w-[70%] mx-auto py-4 px-4 sm:px-6 lg:px-8">
             <div class="text-center">
                 <p class="text-gray-500 text-sm">&copy; 2025 Dewata Motor. Made with ❤️ for rental management.</p>
             </div>
         </div>
     </footer>
+</div>
 </body>
 </html> 

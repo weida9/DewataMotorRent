@@ -6,9 +6,21 @@ from functools import wraps
 import os
 import uuid
 from PIL import Image
+import secrets
+import re
+import time
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
-app.secret_key = 'dewata_motor_secret_key_2025'
+
+# Generate secure secret key
+app.secret_key = secrets.token_hex(32)
+
+# Security configurations
+app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)  # Session expires in 2 hours
 
 # Upload configuration
 UPLOAD_FOLDER = 'static/uploads'
@@ -20,6 +32,64 @@ app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
 
 # Ensure upload directory exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# Simple rate limiting (in memory - for production use Redis)
+login_attempts = {}
+RATE_LIMIT_ATTEMPTS = 5
+RATE_LIMIT_WINDOW = 300  # 5 minutes in seconds
+
+def is_rate_limited(ip_address):
+    """Check if IP is rate limited"""
+    current_time = time.time()
+    
+    if ip_address not in login_attempts:
+        login_attempts[ip_address] = []
+    
+    # Remove old attempts outside the window
+    login_attempts[ip_address] = [
+        attempt_time for attempt_time in login_attempts[ip_address]
+        if current_time - attempt_time < RATE_LIMIT_WINDOW
+    ]
+    
+    return len(login_attempts[ip_address]) >= RATE_LIMIT_ATTEMPTS
+
+def record_login_attempt(ip_address):
+    """Record a failed login attempt"""
+    current_time = time.time()
+    
+    if ip_address not in login_attempts:
+        login_attempts[ip_address] = []
+    
+    login_attempts[ip_address].append(current_time)
+
+def validate_input(text, max_length=100, pattern=None):
+    """Validate and sanitize input"""
+    if not text or not isinstance(text, str):
+        return False
+    
+    # Check length
+    if len(text.strip()) > max_length:
+        return False
+    
+    # Check pattern if provided
+    if pattern and not re.match(pattern, text.strip()):
+        return False
+    
+    return True
+
+def sanitize_filename(filename):
+    """Secure filename handling"""
+    if not filename:
+        return None
+    
+    # Use werkzeug's secure_filename
+    filename = secure_filename(filename)
+    
+    # Additional validation
+    if not filename or len(filename) > 100:
+        return None
+    
+    return filename
 
 def allowed_file(filename):
     """Check if file extension is allowed"""
@@ -46,30 +116,61 @@ def resize_image(image_path, max_size=(800, 600)):
         return False
 
 def save_uploaded_file(file):
-    """Save uploaded file and return filename"""
-    if file and allowed_file(file.filename):
-        # Generate unique filename
-        file_extension = file.filename.rsplit('.', 1)[1].lower()
-        unique_filename = f"{uuid.uuid4().hex}.{file_extension}"
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+    """Save uploaded file securely and return filename"""
+    if not file or not file.filename:
+        return None
+    
+    # Sanitize filename
+    original_filename = sanitize_filename(file.filename)
+    if not original_filename or not allowed_file(original_filename):
+        return None
+    
+    # Check file size (additional check)
+    file.seek(0, os.SEEK_END)
+    file_size = file.tell()
+    file.seek(0)
+    
+    if file_size > MAX_FILE_SIZE:
+        return None
+    
+    # Generate unique filename to prevent path traversal
+    file_extension = original_filename.rsplit('.', 1)[1].lower()
+    unique_filename = f"{uuid.uuid4().hex}.{file_extension}"
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+    
+    # Ensure file path is within upload directory (prevent directory traversal)
+    if not os.path.abspath(file_path).startswith(os.path.abspath(app.config['UPLOAD_FOLDER'])):
+        return None
+    
+    try:
+        # Save file
+        file.save(file_path)
         
+        # Verify it's actually an image by trying to process it
         try:
-            # Save file
-            file.save(file_path)
-            
-            # Resize image
-            if resize_image(file_path):
-                return unique_filename
-            else:
-                # If resize fails, delete file and return None
-                if os.path.exists(file_path):
-                    os.remove(file_path)
-                return None
-                
-        except Exception as e:
-            print(f"Error saving file: {e}")
+            with Image.open(file_path) as img:
+                img.verify()  # Verify it's a valid image
+        except Exception:
+            # Not a valid image, delete and return None
+            if os.path.exists(file_path):
+                os.remove(file_path)
             return None
-    return None
+        
+        # Resize image (this also re-saves as JPEG, removing potential malicious content)
+        if resize_image(file_path):
+            return unique_filename
+        else:
+            # If resize fails, delete file and return None
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            return None
+            
+    except Exception as e:
+        print(f"Error saving file: {e}")
+        # Clean up on error
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        return None
 
 def delete_uploaded_file(filename):
     """Delete uploaded file"""
@@ -131,6 +232,42 @@ def admin_only_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# Security middleware
+@app.after_request
+def set_security_headers(response):
+    """Add security headers to all responses"""
+    # Prevent clickjacking
+    response.headers['X-Frame-Options'] = 'DENY'
+    
+    # Prevent MIME type sniffing
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    
+    # XSS Protection
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    
+    # Referrer Policy
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    
+    # Content Security Policy (basic)
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;"
+    
+    return response
+
+@app.before_request
+def check_session_timeout():
+    """Check if user session has timed out"""
+    if 'user_id' in session and 'login_time' in session:
+        try:
+            login_time = datetime.fromisoformat(session['login_time'])
+            if datetime.now() - login_time > app.config['PERMANENT_SESSION_LIFETIME']:
+                session.clear()
+                flash('Sesi Anda telah berakhir. Silakan login kembali.', 'warning')
+                return redirect(url_for('login'))
+        except (ValueError, TypeError):
+            # Invalid login_time format, clear session
+            session.clear()
+            return redirect(url_for('login'))
+
 @app.route('/')
 def index():
     """Home page - redirect to login if not authenticated"""
@@ -140,10 +277,29 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Login page"""
+    """Login page with security measures"""
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        # Get client IP
+        client_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
+        
+        # Check rate limiting
+        if is_rate_limited(client_ip):
+            flash('Terlalu banyak percobaan login. Coba lagi dalam 5 menit.', 'danger')
+            return render_template('login.html')
+        
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        
+        # Validate input
+        if not validate_input(username, max_length=50, pattern=r'^[a-zA-Z0-9_]+$'):
+            flash('Username tidak valid!', 'danger')
+            record_login_attempt(client_ip)
+            return render_template('login.html')
+        
+        if not password or len(password) > 200:
+            flash('Password tidak valid!', 'danger')
+            record_login_attempt(client_ip)
+            return render_template('login.html')
         
         connection = get_db_connection()
         if not connection:
@@ -152,19 +308,31 @@ def login():
         
         try:
             with connection.cursor() as cursor:
+                # Use parameterized query to prevent SQL injection
                 cursor.execute("SELECT id, username, password, role FROM users WHERE username = %s", (username,))
                 user = cursor.fetchone()
                 
                 if user and check_password_hash(user[2], password):
+                    # Clear failed attempts on successful login
+                    if client_ip in login_attempts:
+                        del login_attempts[client_ip]
+                    
+                    # Set session with security
+                    session.permanent = True
                     session['user_id'] = user[0]
                     session['username'] = user[1]
                     session['role'] = user[3]
+                    session['login_time'] = datetime.now().isoformat()
+                    
                     flash(f'Selamat datang, {user[1]}!', 'success')
                     return redirect(url_for('dashboard'))
                 else:
+                    # Record failed attempt
+                    record_login_attempt(client_ip)
                     flash('Username atau password salah!', 'danger')
         except Exception as e:
-            flash(f'Error: {e}', 'danger')
+            flash('Terjadi kesalahan sistem!', 'danger')
+            print(f"Login error: {e}")  # Log for debugging
         finally:
             connection.close()
     
@@ -179,15 +347,106 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/uploads/<filename>')
+@login_required
 def uploaded_file(filename):
-    """Serve uploaded files"""
+    """Serve uploaded files with security check"""
+    # Sanitize filename to prevent directory traversal
+    filename = sanitize_filename(filename)
+    if not filename:
+        flash('File tidak ditemukan!', 'danger')
+        return redirect(url_for('dashboard'))
+    
+    # Ensure file exists and is within upload directory
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if not os.path.exists(file_path) or not os.path.abspath(file_path).startswith(os.path.abspath(app.config['UPLOAD_FOLDER'])):
+        flash('File tidak ditemukan!', 'danger')
+        return redirect(url_for('dashboard'))
+    
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
     """Dashboard page"""
-    return render_template('dashboard.html')
+    dashboard_data = {}
+    
+    # Get motor statistics for admin users
+    if session.get('role') == 'admin':
+        connection = get_db_connection()
+        if connection:
+            try:
+                with connection.cursor() as cursor:
+                    # Get motor statistics
+                    cursor.execute("""
+                        SELECT 
+                            COUNT(*) as total_motors,
+                            SUM(CASE WHEN status = 'tersedia' THEN 1 ELSE 0 END) as available,
+                            SUM(CASE WHEN status = 'disewa' THEN 1 ELSE 0 END) as rented,
+                            SUM(CASE WHEN status = 'maintenance' THEN 1 ELSE 0 END) as maintenance
+                        FROM motor WHERE admin_id = %s
+                    """, (session['user_id'],))
+                    stats = cursor.fetchone()
+                    dashboard_data['stats'] = {
+                        'total': stats[0] or 0,
+                        'available': stats[1] or 0,
+                        'rented': stats[2] or 0,
+                        'maintenance': stats[3] or 0
+                    }
+                    
+                    # Get recent motors (last 5 added)
+                    cursor.execute("""
+                        SELECT id, nama_motor, plat_nomor, status, deskripsi, gambar 
+                        FROM motor WHERE admin_id = %s 
+                        ORDER BY id DESC LIMIT 5
+                    """, (session['user_id'],))
+                    dashboard_data['recent_motors'] = cursor.fetchall()
+                    
+            except Exception as e:
+                print(f"Dashboard stats error: {e}")
+            finally:
+                connection.close()
+    
+    # Get admin statistics for superadmin users
+    elif session.get('role') == 'superadmin':
+        connection = get_db_connection()
+        if connection:
+            try:
+                with connection.cursor() as cursor:
+                    # Get admin statistics only
+                    cursor.execute("""
+                        SELECT 
+                            COUNT(*) as total_admins
+                        FROM users WHERE role = 'admin'
+                    """)
+                    admin_stats = cursor.fetchone()
+                    
+                    # Get total users (including superadmin)
+                    cursor.execute("""
+                        SELECT 
+                            COUNT(*) as total_users
+                        FROM users
+                    """)
+                    user_stats = cursor.fetchone()
+                    
+                    dashboard_data['admin_stats'] = {
+                        'total_admins': admin_stats[0] or 0,
+                        'total_users': user_stats[0] or 0
+                    }
+                    
+                    # Get recent admins (last 5 added)
+                    cursor.execute("""
+                        SELECT id, username, role 
+                        FROM users WHERE role = 'admin' 
+                        ORDER BY id DESC LIMIT 5
+                    """)
+                    dashboard_data['recent_admins'] = cursor.fetchall()
+                    
+            except Exception as e:
+                print(f"Dashboard admin stats error: {e}")
+            finally:
+                connection.close()
+    
+    return render_template('dashboard.html', **dashboard_data)
 
 @app.route('/users')
 @superadmin_required
@@ -212,11 +471,20 @@ def users():
 @app.route('/add_user', methods=['GET', 'POST'])
 @superadmin_required
 def add_user():
-    """Add new admin user (superadmin only)"""
+    """Add new admin user (superadmin only) with input validation"""
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        role = request.form['role']
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        role = request.form.get('role', '')
+        
+        # Validate input
+        if not validate_input(username, max_length=50, pattern=r'^[a-zA-Z0-9_]+$'):
+            flash('Username tidak valid! Gunakan hanya huruf, angka, dan underscore (max 50 karakter).', 'danger')
+            return render_template('add_user.html')
+        
+        if not password or len(password) < 6 or len(password) > 100:
+            flash('Password harus antara 6-100 karakter!', 'danger')
+            return render_template('add_user.html')
         
         # Validasi: superadmin hanya bisa menambah admin
         if role != 'admin':
@@ -229,7 +497,7 @@ def add_user():
             return render_template('add_user.html')
         
         try:
-            hashed_password = generate_password_hash(password)
+            hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
             with connection.cursor() as cursor:
                 cursor.execute("INSERT INTO users (username, password, role) VALUES (%s, %s, %s)", 
                              (username, hashed_password, role))
@@ -239,7 +507,8 @@ def add_user():
         except pymysql.IntegrityError:
             flash('Username sudah ada!', 'danger')
         except Exception as e:
-            flash(f'Error: {e}', 'danger')
+            flash('Terjadi kesalahan sistem!', 'danger')
+            print(f"Add user error: {e}")
         finally:
             connection.close()
     
@@ -421,23 +690,23 @@ def delete_motor(motor_id):
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
-    """Change user's own password"""
+    """Change user's own password with enhanced validation"""
     if request.method == 'POST':
-        current_password = request.form['current_password']
-        new_password = request.form['new_password']
-        confirm_password = request.form['confirm_password']
+        current_password = request.form.get('current_password', '')
+        new_password = request.form.get('new_password', '')
+        confirm_password = request.form.get('confirm_password', '')
         
-        # Validation
-        if not current_password or not new_password or not confirm_password:
-            flash('Semua field password harus diisi!', 'danger')
+        # Enhanced validation
+        if not current_password or len(current_password) > 200:
+            flash('Password lama tidak valid!', 'danger')
+            return render_template('change_password.html')
+        
+        if not new_password or len(new_password) < 6 or len(new_password) > 100:
+            flash('Password baru harus antara 6-100 karakter!', 'danger')
             return render_template('change_password.html')
         
         if new_password != confirm_password:
             flash('Password baru dan konfirmasi password tidak cocok!', 'danger')
-            return render_template('change_password.html')
-        
-        if len(new_password) < 6:
-            flash('Password baru harus minimal 6 karakter!', 'danger')
             return render_template('change_password.html')
         
         connection = get_db_connection()
@@ -455,8 +724,8 @@ def change_password():
                     flash('Password lama tidak benar!', 'danger')
                     return render_template('change_password.html')
                 
-                # Update password
-                hashed_password = generate_password_hash(new_password)
+                # Update password with stronger hashing
+                hashed_password = generate_password_hash(new_password, method='pbkdf2:sha256')
                 cursor.execute("UPDATE users SET password = %s WHERE id = %s", 
                              (hashed_password, session['user_id']))
                 connection.commit()
@@ -465,7 +734,8 @@ def change_password():
                 return redirect(url_for('dashboard'))
                 
         except Exception as e:
-            flash(f'Error: {e}', 'danger')
+            flash('Terjadi kesalahan sistem!', 'danger')
+            print(f"Change password error: {e}")
         finally:
             connection.close()
     
