@@ -10,22 +10,26 @@ import secrets
 import re
 import time
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
 
-# Generate secure secret key
-app.secret_key = secrets.token_hex(32)
+# Configuration from environment variables
+app.secret_key = os.getenv('SECRET_KEY', secrets.token_hex(32))
 
-# Security configurations
-app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)  # Session expires in 2 hours
+# Security configurations from environment
+app.config['SESSION_COOKIE_SECURE'] = os.getenv('SESSION_COOKIE_SECURE', 'False').lower() == 'true'
+app.config['SESSION_COOKIE_HTTPONLY'] = os.getenv('SESSION_COOKIE_HTTPONLY', 'True').lower() == 'true'
+app.config['SESSION_COOKIE_SAMESITE'] = os.getenv('SESSION_COOKIE_SAMESITE', 'Lax')
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=int(os.getenv('SESSION_LIFETIME_HOURS', '2')))
 
-# Upload configuration
-UPLOAD_FOLDER = 'static/uploads'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
-MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+# Upload configuration from environment
+UPLOAD_FOLDER = os.getenv('UPLOAD_FOLDER', 'static/uploads')
+ALLOWED_EXTENSIONS = set(os.getenv('ALLOWED_EXTENSIONS', 'png,jpg,jpeg,gif,webp').split(','))
+MAX_FILE_SIZE = int(os.getenv('MAX_FILE_SIZE', str(5 * 1024 * 1024)))  # Default 5MB
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
@@ -33,10 +37,12 @@ app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
 # Ensure upload directory exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# Rate limiting configuration from environment
+RATE_LIMIT_ATTEMPTS = int(os.getenv('RATE_LIMIT_ATTEMPTS', '5'))
+RATE_LIMIT_WINDOW = int(os.getenv('RATE_LIMIT_WINDOW', '300'))  # 5 minutes in seconds
+
 # Simple rate limiting (in memory - for production use Redis)
 login_attempts = {}
-RATE_LIMIT_ATTEMPTS = 5
-RATE_LIMIT_WINDOW = 300  # 5 minutes in seconds
 
 def is_rate_limited(ip_address):
     """Check if IP is rate limited"""
@@ -184,13 +190,13 @@ def delete_uploaded_file(filename):
             print(f"Error deleting file: {e}")
     return False
 
-# Database configuration
+# Database configuration from environment
 DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'Bambang0912',  # Default XAMPP MySQL password is empty
-    'database': 'motordewata',
-    'charset': 'utf8mb4'
+    'host': os.getenv('DB_HOST', 'localhost'),
+    'user': os.getenv('DB_USER', 'root'),
+    'password': os.getenv('DB_PASSWORD', ''),
+    'database': os.getenv('DB_NAME', 'motordewata'),
+    'charset': os.getenv('DB_CHARSET', 'utf8mb4')
 }
 
 def get_db_connection():
@@ -794,5 +800,64 @@ def edit_admin_password(user_id):
     finally:
         connection.close()
 
+@app.route('/delete_admin/<int:user_id>', methods=['POST'])
+@superadmin_required
+def delete_admin(user_id):
+    """Delete admin user (superadmin only)"""
+    connection = get_db_connection()
+    if not connection:
+        flash('Koneksi database gagal!', 'danger')
+        return redirect(url_for('users'))
+    
+    try:
+        with connection.cursor() as cursor:
+            # Get admin data to validate
+            cursor.execute("SELECT id, username, role FROM users WHERE id = %s", (user_id,))
+            admin = cursor.fetchone()
+            
+            if not admin:
+                flash('Admin tidak ditemukan!', 'danger')
+                return redirect(url_for('users'))
+            
+            # Prevent deletion of superadmin accounts
+            if admin[2] == 'superadmin':
+                flash('Tidak dapat menghapus akun superadmin!', 'danger')
+                return redirect(url_for('users'))
+            
+            # Prevent self-deletion (although superadmin shouldn't be admin role)
+            if admin[0] == session['user_id']:
+                flash('Tidak dapat menghapus akun Anda sendiri!', 'danger')
+                return redirect(url_for('users'))
+            
+            # Check if admin has motors assigned
+            cursor.execute("SELECT COUNT(*) FROM motor WHERE admin_id = %s", (user_id,))
+            motor_count = cursor.fetchone()[0]
+            
+            if motor_count > 0:
+                flash(f'Tidak dapat menghapus admin {admin[1]} karena masih memiliki {motor_count} motor yang terdaftar. Hapus atau pindahkan motor terlebih dahulu!', 'danger')
+                return redirect(url_for('users'))
+            
+            # Delete the admin
+            cursor.execute("DELETE FROM users WHERE id = %s AND role = 'admin'", (user_id,))
+            connection.commit()
+            
+            if cursor.rowcount > 0:
+                flash(f'Admin {admin[1]} berhasil dihapus!', 'success')
+            else:
+                flash('Gagal menghapus admin!', 'danger')
+                
+    except Exception as e:
+        flash(f'Error: {e}', 'danger')
+        print(f"Delete admin error: {e}")
+    finally:
+        connection.close()
+    
+    return redirect(url_for('users'))
+
 if __name__ == '__main__':
-    app.run(debug=True) 
+    # Flask run configuration from environment
+    host = os.getenv('HOST', '0.0.0.0')
+    port = int(os.getenv('PORT', '80'))
+    debug = os.getenv('DEBUG', 'False').lower() == 'true'
+    
+    app.run(host=host, port=port, debug=debug) 

@@ -4,6 +4,59 @@ All notable changes to the Dewata Motor rental management system will be documen
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-01-27
+
+### 🚀 New Features Added
+- **Environment Variables Configuration**
+  - Added `python-dotenv` support for secure configuration management
+  - Created `config.env.template` for easy environment setup
+  - Moved all sensitive configuration from hardcoded values to environment variables
+  - Added comprehensive environment setup documentation
+
+- **Enhanced Admin Management**
+  - **Delete Admin Feature**: Superadmin can now delete admin users
+  - **Delete Confirmation Dialog**: JavaScript modal with confirmation before deletion
+  - **Safety Validations**: 
+    - Cannot delete superadmin accounts
+    - Cannot delete self
+    - Cannot delete admin with existing motors
+    - Shows motor count if deletion is blocked
+
+### 🔧 Configuration Improvements
+- **Secure Configuration Management**
+  - Database credentials moved to environment variables
+  - Flask secret key from environment (auto-generates if not set)
+  - All upload, security, and rate limiting settings configurable
+  - Debug mode and port configuration from environment
+
+- **Documentation Updates**
+  - Updated README.md with environment setup instructions
+  - Created ENVIRONMENT_SETUP.md with detailed configuration guide
+  - Updated installation instructions for environment variables
+  - Enhanced security best practices documentation
+
+### 🛡️ Security Enhancements
+- **Environment Security**
+  - Sensitive data no longer hardcoded in source code
+  - `.env` file automatically ignored by git
+  - Production-ready configuration templates
+  - Secure default values with fallbacks
+
+### 📊 User Experience Improvements
+- **Admin Deletion UI**
+  - Intuitive delete button with red styling
+  - Modal confirmation dialog with admin name
+  - Clear warning messages about irreversible action
+  - Keyboard shortcuts (Escape to close)
+  - Click-outside-to-close functionality
+
+### 🔧 Technical Improvements
+- **Code Organization**
+  - Cleaner configuration management
+  - Better separation of concerns
+  - Environment-based configuration loading
+  - Improved maintainability
+
 ## [2.0.0] - 2025-01-27
 
 ### 🚀 Major Features Added

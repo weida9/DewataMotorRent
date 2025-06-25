@@ -32,6 +32,7 @@ Sistem manajemen rental motor modern dan responsif yang dibangun dengan Flask da
 - **Lihat daftar user** dengan informasi role
 - **Tambah admin baru** (superadmin tidak bisa buat superadmin lain)
 - **Edit password admin** untuk reset akses
+- **Hapus admin** dengan konfirmasi dan validasi keamanan
 - **Validasi input** dan sanitasi data
 
 ### 🏍️ Manajemen Motor (Admin Only)
@@ -65,6 +66,7 @@ Sistem manajemen rental motor modern dan responsif yang dibangun dengan Flask da
 - **Frontend**: HTML5 + Tailwind CSS 3.0 (via CDN)
 - **Image Processing**: Pillow (PIL)
 - **Security**: Werkzeug, Session-based auth
+- **Configuration**: python-dotenv untuk environment variables
 - **Development**: Black, Pytest, Flake8
 
 ## 📦 Persyaratan Sistem
@@ -79,6 +81,17 @@ Sistem manajemen rental motor modern dan responsif yang dibangun dengan Flask da
 
 ### 🎯 Quick Setup Local
 
+**Option 1: Automatic Setup (Recommended)**
+```bash
+# 1. Clone atau download project
+git clone <repository-url>
+cd DewataMotorRent
+
+# 2. Jalankan setup script otomatis
+python setup.py
+```
+
+**Option 2: Manual Setup**
 ```bash
 # 1. Clone atau download project
 git clone <repository-url>
@@ -87,32 +100,49 @@ cd DewataMotorRent
 # 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Setup database MySQL
+# 3. Setup environment variables
+cp config.env.template .env
+# Edit file .env sesuai konfigurasi Anda
+
+# 4. Setup database MySQL
 # Buka XAMPP -> Start MySQL
 # Buka phpMyAdmin -> Import database_schema.sql
-
-# 4. Konfigurasi database (jika perlu)
-# Edit app.py bagian DB_CONFIG sesuai setup MySQL Anda
 
 # 5. Jalankan aplikasi
 python app.py
 ```
 
-**Aplikasi berjalan di**: `http://localhost:5000`
+**Aplikasi berjalan di**: `http://localhost:80` (default) atau sesuai PORT di file `.env`
 
-### 🔧 Konfigurasi Database
+### 🔧 Konfigurasi Environment Variables
 
-Update konfigurasi di `app.py` jika diperlukan:
+**PENTING**: Buat file `.env` dari template:
 
-```python
-DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'Bambang0912',  # Sesuaikan dengan password MySQL Anda
-    'database': 'motordewata',
-    'charset': 'utf8mb4'
-}
+```bash
+cp config.env.template .env
 ```
+
+Edit file `.env` dan sesuaikan konfigurasi:
+
+```env
+# Flask Configuration
+SECRET_KEY=ganti-dengan-secret-key-yang-aman-untuk-production
+DEBUG=True
+PORT=80
+
+# Database Configuration  
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your-mysql-password-here
+DB_NAME=motordewata
+
+# Untuk production, set:
+FLASK_ENV=production
+DEBUG=False
+SESSION_COOKIE_SECURE=True
+```
+
+📚 **Panduan lengkap**: Lihat [ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md)
 
 ## 👤 Akun Default
 
@@ -161,8 +191,11 @@ DB_CONFIG = {
   - Lihat semua admin yang terdaftar
   - Tambah admin baru untuk area/cabang
   - Edit password admin (reset akses)
+  - Hapus admin dengan konfirmasi dialog
 - **Keamanan**:
   - Tidak bisa membuat superadmin baru
+  - Tidak bisa menghapus akun superadmin
+  - Tidak bisa menghapus admin yang masih memiliki motor
   - Tidak bisa melihat/edit data motor langsung
 
 ### 🔧 Fitur Admin
@@ -183,21 +216,24 @@ DB_CONFIG = {
 
 ```
 DewataMotorRent/
-├── 📄 app.py                 # Main Flask application (798 lines)
-├── 📄 requirements.txt       # Production dependencies
-├── 📄 requirements-dev.txt   # Development dependencies
-├── 📄 database_schema.sql    # Complete database schema + sample data
-├── 📄 README.md             # Dokumentasi lengkap (ini)
-├── 📄 CHANGELOG.md          # Riwayat perubahan
-├── 📄 CONTRIBUTING.md       # Panduan kontribusi
-├── 📄 LICENSE               # MIT License
+├── 📄 app.py                    # Main Flask application (850+ lines)
+├── 📄 requirements.txt          # Production dependencies
+├── 📄 requirements-dev.txt      # Development dependencies
+├── 📄 database_schema.sql       # Complete database schema + sample data
+├── 📄 config.env.template       # Environment variables template
+├── 📄 .env                     # Environment variables (create from template)
+├── 📄 README.md                # Dokumentasi lengkap (ini)
+├── 📄 CHANGELOG.md             # Riwayat perubahan
+├── 📄 ENVIRONMENT_SETUP.md     # Panduan setup environment variables
+├── 📄 CONTRIBUTING.md          # Panduan kontribusi
+├── 📄 LICENSE                  # MIT License
 ├── 📁 static/
-│   └── 📁 uploads/          # Folder untuk upload gambar motor
-└── 📁 templates/            # Template HTML
-    ├── 📄 base.html         # Template dasar dengan navbar
-    ├── 📄 login.html        # Halaman login
-    ├── 📄 dashboard.html    # Dashboard utama
-    ├── 📄 users.html        # Daftar user (superadmin)
+│   └── 📁 uploads/             # Folder untuk upload gambar motor
+└── 📁 templates/               # Template HTML
+    ├── 📄 base.html            # Template dasar dengan navbar
+    ├── 📄 login.html           # Halaman login
+    ├── 📄 dashboard.html       # Dashboard utama
+    ├── 📄 users.html           # Daftar user (superadmin)
     ├── 📄 add_user.html     # Form tambah admin
     ├── 📄 motors.html       # Daftar motor dengan gambar
     ├── 📄 add_motor.html    # Form tambah motor
